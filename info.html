@@ -29,18 +29,22 @@
       transform:translateX(0);
     }
     .book-container.open{transform:translateX(240px)}
+    .book-container.closed-back{transform:translateX(480px)}
 
     @media(max-width:1050px){
       .book-container{transform:scale(0.8) translateX(0)}
       .book-container.open{transform:scale(0.8) translateX(240px)}
+      .book-container.closed-back{transform:scale(0.8) translateX(480px)}
     }
     @media(max-width:850px){
       .book-container{transform:scale(0.65) translateX(0)}
       .book-container.open{transform:scale(0.65) translateX(240px)}
+      .book-container.closed-back{transform:scale(0.65) translateX(480px)}
     }
     @media(max-width:600px){
       .book-container{transform:scale(0.45) translateX(0)}
       .book-container.open{transform:scale(0.45) translateX(240px)}
+      .book-container.closed-back{transform:scale(0.45) translateX(480px)}
     }
 
     /* ── PAGE BASE ── */
@@ -281,9 +285,14 @@
   const book = document.getElementById('book');
   
   function updateBookPosition() {
-    if (currentPage === 0 || currentPage === totalPages) {
-      book.classList.remove('open');
+    book.classList.remove('open', 'closed-back');
+    if (currentPage === 0) {
+      // Giữ nguyên ở vị trí bìa trước
+    } else if (currentPage === totalPages) {
+      // Dịch sách để căn giữa bìa sau
+      book.classList.add('closed-back');
     } else {
+      // Dịch sách để căn giữa 2 trang mở
       book.classList.add('open');
     }
   }
