@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>V-Nexus — 3D Team Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,800;1,500;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --purple:#714b67;--purple-d:#5c3d55;
+      --paper:#fdfcf8;--paper-dark:#f2efe9;
+      --text:#2c2c2c;--text2:#444;--text3:#777;
+    }
+    body{
+      font-family:'Inter',sans-serif;
+      background:radial-gradient(circle at center, #e0d8e4 0%, #c1b3c9 100%);
+      height:100vh;display:flex;align-items:center;justify-content:center;
+      overflow:hidden;perspective:1800px;
+    }
+    
+    /* ── BOOK CONTAINER ── */
+    .book-container{
+      position:relative;
+      width:480px;height:720px; /* Tăng kích thước sách (Dài và to hơn) */
+      transition:transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      transform:translateX(0);
+    }
+    .book-container.open{transform:translateX(240px)}
+
+    @media(max-width:1050px){
+      .book-container{transform:scale(0.8) translateX(0)}
+      .book-container.open{transform:scale(0.8) translateX(240px)}
+    }
+    @media(max-width:850px){
+      .book-container{transform:scale(0.65) translateX(0)}
+      .book-container.open{transform:scale(0.65) translateX(240px)}
+    }
+    @media(max-width:600px){
+      .book-container{transform:scale(0.45) translateX(0)}
+      .book-container.open{transform:scale(0.45) translateX(240px)}
+    }
+
+    /* ── PAGE BASE ── */
+    .page{
+      position:absolute;top:0;left:0;
+      width:100%;height:100%;
+      transform-style:preserve-3d;
+      transform-origin:left center;
+      transition:transform 1.2s cubic-bezier(0.25, 1, 0.25, 1);
+      cursor:pointer;
+      border-radius:3px 12px 12px 3px;
+      box-shadow:inset 4px 0 10px rgba(0,0,0,0.1);
+    }
+    .page.flipped{transform:rotateY(-180deg)}
+    
+    #page1{z-index:3}
+    #page2{z-index:2}
+    #page3{z-index:1}
+
+    .page.flipped#page1{z-index:1}
+    .page.flipped#page2{z-index:2}
+    .page.flipped#page3{z-index:3}
+
+    /* ── FACES ── */
+    .front, .back{
+      position:absolute;top:0;left:0;
+      width:100%;height:100%;
+      backface-visibility:hidden;
+      background:var(--paper);
+      border-radius:3px 12px 12px 3px;
+      padding:50px 40px; /* Tăng padding */
+      overflow-y:auto; /* Cho phép cuộn nếu nội dung quá dài */
+      box-shadow:inset 4px 0 10px rgba(0,0,0,0.05), 3px 3px 20px rgba(0,0,0,0.06);
+      border-right:1px solid rgba(0,0,0,0.05);
+    }
+    
+    /* Custom Scrollbar for pages */
+    .front::-webkit-scrollbar, .back::-webkit-scrollbar { width: 4px; }
+    .front::-webkit-scrollbar-track, .back::-webkit-scrollbar-track { background: transparent; }
+    .front::-webkit-scrollbar-thumb, .back::-webkit-scrollbar-thumb { background: rgba(113,75,103,0.2); border-radius: 4px; }
+
+    .back{
+      transform:rotateY(180deg);
+      border-radius:12px 3px 3px 12px;
+      border-left:1px solid rgba(0,0,0,0.05);
+      border-right:none;
+      box-shadow:inset -4px 0 10px rgba(0,0,0,0.05), -3px 3px 20px rgba(0,0,0,0.06);
+      background:linear-gradient(to right, var(--paper-dark) 0%, var(--paper) 6%);
+    }
+    .front{background:linear-gradient(to left, var(--paper-dark) 0%, var(--paper) 6%)}
+
+    /* ── CONTENT STYLES ── */
+    h1, h2, h3{font-family:'Playfair Display',serif;color:var(--purple-d)}
+    
+    /* Cover */
+    .cover{
+      background:linear-gradient(135deg, var(--purple-d), var(--purple));
+      color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;border-left:12px solid #3d2636;
+      padding:60px 40px;
+    }
+    .cover h1{color:#fff;font-size:3.5rem;margin-bottom:15px;line-height:1.1;letter-spacing:-1px}
+    .cover-sub{font-size:1.2rem;font-weight:300;opacity:0.9;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px}
+    .cover-desc{font-size:0.95rem;font-weight:300;opacity:0.8;font-family:'Playfair Display',serif;font-style:italic;max-width:80%}
+    .cover-badge{margin-top:60px;width:70px;height:70px;border:2px solid rgba(255,255,255,0.6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display';font-style:italic;font-size:1.2rem}
+    
+    /* Content Pages */
+    .page-title{font-size:2.2rem;margin-bottom:24px;border-bottom:2px solid var(--purple);padding-bottom:10px;display:inline-block}
+    
+    .av{width:110px;height:110px;border-radius:50%;background:#ccc;display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:bold;color:#fff;margin:0 auto 20px;box-shadow:0 12px 24px rgba(113,75,103,0.15)}
+    .av-d{background:linear-gradient(135deg,#714b67,#9b59b6)}
+    .av-q{background:linear-gradient(135deg,#2980b9,#3498db)}
+    .av-n{background:linear-gradient(135deg,#27ae60,#2ecc71)}
+    
+    .role{text-align:center;font-size:1.05rem;color:var(--text2);margin-bottom:30px;font-weight:500}
+    
+    .info-group{margin-bottom:24px;background:rgba(255,255,255,0.5);padding:16px;border-radius:8px;border:1px solid rgba(0,0,0,0.03)}
+    .info-label{font-size:0.8rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--purple);margin-bottom:10px;font-weight:700}
+    .info-text{font-size:0.95rem;color:var(--text2);line-height:1.7}
+    
+    .tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{padding:6px 12px;background:rgba(113,75,103,0.08);color:var(--purple-d);border-radius:6px;font-size:0.85rem;font-weight:600}
+    
+    .link-list{list-style:none}
+    .link-list li{margin-bottom:10px;font-size:0.95rem;display:flex;align-items:center;gap:8px}
+    .link-list a{color:var(--purple);text-decoration:underline;font-weight:500}
+    
+    .page-number{position:absolute;bottom:24px;font-size:0.9rem;color:var(--text3);font-family:'Playfair Display';font-style:italic}
+    .front .page-number{right:40px}
+    .back .page-number{left:40px}
+
+    .click-hint{position:absolute;bottom:30px;right:30px;font-size:0.85rem;color:rgba(255,255,255,0.7);animation:bounce 2s infinite}
+    @keyframes bounce{0%,100%{transform:translateX(0)}50%{transform:translateX(-8px)}}
+
+    /* Intro Back Cover */
+    .intro-text{font-size:1.05rem;line-height:1.9;color:var(--text2);font-family:'Playfair Display',serif;text-align:justify;margin-bottom:20px}
+    .intro-text strong{color:var(--purple-d)}
+
+  </style>
+</head>
+<body>
+
+<div class="book-container" id="book">
+  
+  <!-- PAGE 1: Cover / Intro -->
+  <div class="page" id="page1" onclick="flipPage(1)">
+    <div class="front cover">
+      <h1>V-Nexus<br>Team</h1>
+      <div class="cover-sub">Hồ sơ năng lực</div>
+      <div class="cover-desc">Giải pháp Trí tuệ Nhân tạo đột phá cho tương lai</div>
+      <div class="cover-badge">2026</div>
+      <div class="click-hint">Click để mở sách →</div>
+    </div>
+    
+    <div class="back">
+      <h2 class="page-title" style="text-align:center;width:100%;margin-bottom:40px">Hành trình AI 2026</h2>
+      <p class="intro-text">
+        Chào mừng đến với hồ sơ của <strong>V-Nexus</strong>. Chúng tôi là một tập thể đam mê công nghệ, chính thức góp mặt tại đấu trường khốc liệt <strong>Vietnam AI Challenge 2026</strong>.
+      </p>
+      <p class="intro-text">
+        Sứ mệnh của đội không chỉ dừng lại ở việc tạo ra các mô hình AI có độ chính xác cao, mà là xây dựng những <strong>giải pháp thực tiễn</strong>. Chúng tôi tập trung vào giải quyết các bài toán nhức nhối trong Giáo dục & Đào tạo, cũng như tự động hóa quy trình giúp nâng cao năng suất cho các Doanh nghiệp vừa và nhỏ (SME).
+      </p>
+      <p class="intro-text">
+        Trải qua 48 giờ code liên tục tại AI Arena (Hà Nội), V-Nexus hứa hẹn sẽ mang đến Demo Day những sản phẩm AI-Native sáng tạo, mạnh mẽ và giàu tính nhân bản nhất.
+      </p>
+      <div style="text-align:center;margin-top:50px;color:var(--purple);font-size:2.5rem;opacity:0.8">🚀</div>
+      <div class="page-number">1</div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: Vince / Quyết -->
+  <div class="page" id="page2" onclick="flipPage(2)">
+    <div class="front">
+      <div class="av av-d">D</div>
+      <h2 style="text-align:center;margin-bottom:5px">Vince Dam</h2>
+      <div class="role">★ Đội trưởng · Kỹ thuật / Khởi nghiệp</div>
+      
+      <div class="info-group">
+        <div class="info-label">Vai trò & Mục tiêu</div>
+        <div class="info-text">Định hướng chiến lược phát triển sản phẩm, thiết kế kiến trúc hệ thống Backend và ứng dụng "Vibe Coding" để tối ưu hóa quy trình. Mong muốn áp dụng AI sâu rộng vào mảng EdTech.</div>
+      </div>
+      
+      <div class="info-group">
+        <div class="info-label">Kỹ năng cốt lõi</div>
+        <div class="tags">
+          <span class="tag">Backend Dev</span><span class="tag">Vibe Coding</span><span class="tag">Python</span>
+          <span class="tag">System Architecture</span><span class="tag">Chiến lược</span>
+        </div>
+      </div>
+      
+      <div class="info-group">
+        <div class="info-label">Liên kết cá nhân</div>
+        <ul class="link-list">
+          <li>🔗 <a href="https://linkedin.com/in/vince-dam" target="_blank">LinkedIn Profile</a></li>
+          <li>🌐 <a href="https://info.editech.vn" target="_blank">info.editech.vn</a></li>
+        </ul>
+      </div>
+      <div class="page-number">2</div>
+    </div>
+    
+    <div class="back">
+      <div class="av av-q">Q</div>
+      <h2 style="text-align:center;margin-bottom:5px">Đỗ Văn Quyết</h2>
+      <div class="role">Thành viên · Kỹ thuật / Developer</div>
+      
+      <div class="info-group">
+        <div class="info-label">Vai trò & Mục tiêu</div>
+        <div class="info-text">Chịu trách nhiệm chính trong việc xây dựng các pipeline xử lý dữ liệu bằng Python và phát triển giao diện người dùng (UI/UX) đảm bảo trải nghiệm mượt mà, trực quan cho sản phẩm AI. Tập trung vào mảng năng suất SME.</div>
+      </div>
+      
+      <div class="info-group">
+        <div class="info-label">Kỹ năng cốt lõi</div>
+        <div class="tags">
+          <span class="tag">Python</span><span class="tag">Data Pipeline</span><span class="tag">UI/UX Design</span>
+          <span class="tag">Web Development</span>
+        </div>
+      </div>
+      
+      <div class="info-group">
+        <div class="info-label">Đặc điểm nhận dạng</div>
+        <div class="info-text" style="font-style:italic">"Lập trình viên đam mê tối ưu hóa thuật toán và cực kỳ thích bánh bông lan trứng muối 🍰."</div>
+      </div>
+      
+      <div class="info-group">
+        <div class="info-label">Liên kết cá nhân</div>
+        <ul class="link-list">
+          <li>🐙 <a href="https://github.com/quyetdv28978" target="_blank">github.com/quyetdv28978</a></li>
+          <li>🔗 <a href="https://linkedin.com/in/do-quyet-a13a31274/" target="_blank">LinkedIn Profile</a></li>
+        </ul>
+      </div>
+      <div class="page-number">3</div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: Ngọc / Back Cover -->
+  <div class="page" id="page3" onclick="flipPage(3)">
+    <div class="front">
+      <div class="av av-n">N</div>
+      <h2 style="text-align:center;margin-bottom:5px">Lưu Xuân Ngọc</h2>
+      <div class="role">Thành viên · Vận hành / Quản lý SP</div>
+      
+      <div class="info-group">
+        <div class="info-label">Vai trò & Mục tiêu</div>
+        <div class="info-text">Đảm bảo sản phẩm phát triển đúng tiến độ, quản lý yêu cầu người dùng và lên kế hoạch go-to-market. Đóng vai trò cầu nối giữa kỹ thuật và giá trị nghiệp vụ của dự án tại cuộc thi.</div>
+      </div>
+      
+      <div class="info-group">
+        <div class="info-label">Trạng thái hồ sơ</div>
+        <div class="info-text" style="color:var(--text3);font-style:italic">
+          (Đang cập nhật thêm thông tin chi tiết về các dự án đã tham gia...)
+        </div>
+      </div>
+      
+      <div style="margin-top:40px;padding:30px 20px;background:rgba(113,75,103,0.04);border-radius:12px;text-align:center;border:2px dashed rgba(113,75,103,0.2)">
+        <div style="font-size:2rem;color:var(--purple);margin-bottom:10px">+</div>
+        <div style="font-family:'Playfair Display';font-size:1.4rem;font-weight:600;color:var(--purple-d);margin-bottom:8px">Đội hình vẫn đang mở</div>
+        <div style="font-size:0.95rem;color:var(--text2);line-height:1.6">Chúng tôi vẫn đang tìm kiếm những mảnh ghép tài năng. Hiện tại còn <strong>3 chỗ trống</strong> trên chuyến tàu V-Nexus.</div>
+      </div>
+      <div class="page-number">4</div>
+    </div>
+    
+    <div class="back cover" style="border-left:none;border-right:12px solid #3d2636;justify-content:center;padding:60px 40px">
+      <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:20px">
+        <h2 style="color:#fff;font-size:2.8rem;margin-bottom:30px;line-height:1.2">Hẹn gặp tại<br>Demo Day</h2>
+        <div style="font-size:1.2rem;font-weight:300;opacity:0.9;letter-spacing:2px;margin-bottom:15px">AI ARENA · HÀ NỘI</div>
+        <div style="font-size:1rem;opacity:0.7;font-family:'Playfair Display';font-style:italic">17–19 Tháng 7, 2026</div>
+        <div style="margin-top:50px;width:50px;height:2px;background:rgba(255,255,255,0.4)"></div>
+        <div style="margin-top:50px;font-size:1.1rem;font-weight:600">V-Nexus Team © 2026</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let currentPage = 0;
+  const totalPages = 3;
+  const book = document.getElementById('book');
+  
+  function updateBookPosition() {
+    if (currentPage === 0 || currentPage === totalPages) {
+      book.classList.remove('open');
+    } else {
+      book.classList.add('open');
+    }
+  }
+
+  function flipPage(pageNum) {
+    const page = document.getElementById(`page${pageNum}`);
+    if (page.classList.contains('flipped')) {
+      // Nhấn vào mặt sau -> Lật về
+      page.classList.remove('flipped');
+      currentPage = pageNum - 1;
+    } else {
+      // Nhấn vào mặt trước -> Lật đi
+      page.classList.add('flipped');
+      currentPage = pageNum;
+    }
+    updateBookPosition();
+  }
+</script>
+</body>
+</html>
