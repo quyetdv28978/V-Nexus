@@ -60,13 +60,15 @@
     }
     .page.flipped{transform:rotateY(-180deg)}
     
-    #page1{z-index:3}
-    #page2{z-index:2}
-    #page3{z-index:1}
+    #page1{z-index:4}
+    #page2{z-index:3}
+    #page3{z-index:2}
+    #page4{z-index:1}
 
     .page.flipped#page1{z-index:1}
     .page.flipped#page2{z-index:2}
     .page.flipped#page3{z-index:3}
+    .page.flipped#page4{z-index:4}
 
     /* ── FACES ── */
     .front, .back{
@@ -118,6 +120,8 @@
     .av-d{background:linear-gradient(135deg,#714b67,#9b59b6)}
     .av-q{background:linear-gradient(135deg,#2980b9,#3498db)}
     .av-n{background:linear-gradient(135deg,#27ae60,#2ecc71)}
+    .av-dung{background:linear-gradient(135deg,#1abc9c,#16a085)}
+    .av-hieu{background:linear-gradient(135deg,#2980b9,#2c3e50)}
     
     .role{text-align:center;font-size:1.05rem;color:var(--text2);margin-bottom:30px;font-weight:500}
     
@@ -239,7 +243,7 @@
     </div>
   </div>
 
-  <!-- PAGE 3: Ngọc / Back Cover -->
+  <!-- PAGE 3: Ngọc / Dũng -->
   <div class="page" id="page3" onclick="flipPage(3)">
     <div class="front">
       <div class="av av-n">N</div>
@@ -257,13 +261,70 @@
           (Đang cập nhật thêm thông tin chi tiết về các dự án đã tham gia...)
         </div>
       </div>
-      
-      <div style="margin-top:40px;padding:30px 20px;background:rgba(113,75,103,0.04);border-radius:12px;text-align:center;border:2px dashed rgba(113,75,103,0.2)">
-        <div style="font-size:2rem;color:var(--purple);margin-bottom:10px">+</div>
-        <div style="font-family:'Playfair Display';font-size:1.4rem;font-weight:600;color:var(--purple-d);margin-bottom:8px">Đội hình vẫn đang mở</div>
-        <div style="font-size:0.95rem;color:var(--text2);line-height:1.6">Chúng tôi vẫn đang tìm kiếm những mảnh ghép tài năng. Hiện tại còn <strong>3 chỗ trống</strong> trên chuyến tàu V-Nexus.</div>
-      </div>
       <div class="page-number">4</div>
+    </div>
+    
+    <div class="back">
+      <div class="av av-dung">D</div>
+      <h2 style="text-align:center;margin-bottom:5px">Lê Văn Dũng</h2>
+      <div class="role">Thành viên · Sáng lập / Khởi nghiệp</div>
+      
+      <div class="info-group">
+        <div class="info-label">Ngành / Lĩnh vực quan tâm</div>
+        <div class="tags">
+          <span class="tag">Chưa có thông tin</span>
+        </div>
+      </div>
+      
+      <div class="info-group">
+        <div class="info-label">Kỹ năng cốt lõi</div>
+        <div class="tags">
+          <span class="tag">Chưa có thông tin</span>
+        </div>
+      </div>
+      
+      <div class="info-group">
+        <div class="info-label">Liên kết cá nhân</div>
+        <ul class="link-list">
+          <li>🔗 GitHub: Chưa có</li>
+          <li>🔗 LinkedIn: Chưa có</li>
+          <li>🌐 Website: Chưa có</li>
+        </ul>
+      </div>
+      <div class="page-number">5</div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: Hiếu / Back Cover -->
+  <div class="page" id="page4" onclick="flipPage(4)">
+    <div class="front">
+      <div class="av av-hieu">N</div>
+      <h2 style="text-align:center;margin-bottom:5px">Hiếu Nguyễn</h2>
+      <div class="role">Thành viên · Trí tuệ nhân tạo / Dữ liệu / Học máy</div>
+      
+      <div class="info-group">
+        <div class="info-label">Lĩnh vực quan tâm & Ngành</div>
+        <div class="tags">
+          <span class="tag">Giáo dục & Đào tạo</span><span class="tag">Ngân hàng & Tài chính</span><span class="tag">Y tế & Sức khỏe</span><span class="tag">Đổi mới Sáng tạo</span><span class="tag">Công nghệ tài chính</span><span class="tag">Công nghệ</span>
+        </div>
+      </div>
+      
+      <div class="info-group">
+        <div class="info-label">Kỹ năng cốt lõi</div>
+        <div class="tags">
+          <span class="tag">AI/ML</span><span class="tag">Khoa học dữ liệu</span><span class="tag">Vibe Coding</span><span class="tag">Python</span>
+        </div>
+      </div>
+      
+      <div class="info-group">
+        <div class="info-label">Liên kết cá nhân</div>
+        <ul class="link-list">
+          <li>🔗 <a href="https://www.linkedin.com/in/hieu-nguyen-4444b5241/" target="_blank">LinkedIn Profile</a></li>
+          <li>🔗 GitHub: Chưa có</li>
+          <li>🌐 Website: Chưa có</li>
+        </ul>
+      </div>
+      <div class="page-number">6</div>
     </div>
     
     <div class="back cover" style="border-left:none;border-right:12px solid #3d2636;justify-content:center;padding:60px 40px">
@@ -281,7 +342,7 @@
 
 <script>
   let currentPage = 0;
-  const totalPages = 3;
+  const totalPages = 4;
   const book = document.getElementById('book');
   
   function updateBookPosition() {
